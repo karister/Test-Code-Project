@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Archetype/Archetype.iml" filepath="$PROJECT_DIR$/Archetype/Archetype.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BuilderMode/BuilderMode.iml" filepath="$PROJECT_DIR$/BuilderMode/BuilderMode.iml" />
+      <module fileurl="file://$PROJECT_DIR$/IOTest/IOTest.iml" filepath="$PROJECT_DIR$/IOTest/IOTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MultiChat/MultiChat.iml" filepath="$PROJECT_DIR$/MultiChat/MultiChat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ShenCeTest/ShenCeTest.iml" filepath="$PROJECT_DIR$/ShenCeTest/ShenCeTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SocketTest/SocketTest.iml" filepath="$PROJECT_DIR$/SocketTest/SocketTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Step2Assignment/Step2Assignment.iml" filepath="$PROJECT_DIR$/Step2Assignment/Step2Assignment.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Step3Assignment/Step3Assignment.iml" filepath="$PROJECT_DIR$/Step3Assignment/Step3Assignment.iml" />
+    </modules>
+  </component>
+</project>

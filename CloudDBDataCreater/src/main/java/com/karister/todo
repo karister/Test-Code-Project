@@ -1,0 +1,230 @@
+#!/usr/bin/env bash
+
+TASKS="$HOME/.todo/tasks"
+MARK="1**1"
+UNMARK="0**0"
+
+Edit() {
+  num="$1"
+  data="$2"
+  index=1
+  cat "$TASKS" | while read -r line; do
+    if [ "$index" == "$num" ]; then
+      content=${line:0:${#line}-5}
+      line=${line/"$content"/"$data"}
+    fi
+    if [ $index == 1 ]; then
+      echo "$line" >"$TASKS"
+    else
+      echo "$line" >>"$TASKS"
+    fi
+    index=$(expr $index + 1)
+  done
+}
+
+List() {
+  index=1
+  hadTask="false"
+  echo "# To be done"
+  while read -r line; do
+    markFlag=${line:${#line}-4:${#line}}
+    if [ "$markFlag" == "$UNMARK" ]; then
+      line=${line:0:${#line}-5}
+      hadTask="true"
+      echo "$index" "$line"
+    fi
+    index=$(expr $index + 1)
+
+  done <"$TASKS"
+
+  if [ "$hadTask" == "false" ]; then
+    echo "Empty"
+  fi
+  hadTask="false"
+  echo "# Completed"
+  index=1
+  while read -r line; do
+    markFlag=${line:${#line}-4:${#line}}
+    if [ "$markFlag" == "$MARK" ]; then
+      line=${line:0:${#line}-5}
+      hadTask="true"
+      echo $index "$line"
+    fi
+    index=$(expr $index + 1)
+  done <"$TASKS"
+  if [ "$hadTask" == "false" ]; then
+    echo "Empty"
+  fi
+}
+
+Mark() {
+  handle="$1"
+  task_string="$2"
+  tasks=()
+  numsArr=(${task_string// / })
+  index=1
+  while read -r line; do
+      for num in "${numsArr[@]}" ; do
+        if [ "$index" == "$num" ]; then
+          if [ "$handle" == "mark" ]; then
+              line=${line/"$UNMARK"/"$MARK"}
+          else
+              line=${line/"$MARK"/"$UNMARK"}
+          fi
+          break
+        fi
+      done
+      tasks[index-1]=$line
+      index=$(expr $index + 1)
+  done < "$TASKS"
+
+  index=1
+  for t in "${tasks[@]}" ; do
+    if [ "$index" == 1 ]; then
+      echo "$t" > "$TASKS"
+    else
+      echo "$t" >> "$TASKS"
+    fi
+    index=$(expr $index + 1)
+  done
+}
+
+Remove() {
+  task_array=($1)
+  tasks=()
+  index=1
+  hadTask="false"
+  while read -r line; do
+    for num in "${task_array[@]}" ; do
+      if [ "$index" == "$num" ]; then
+        hadTask="true"
+        break
+      fi
+    done
+    if [ "$hadTask" == "false" ]; then
+      tasks[index-1]=$line
+    else
+      hadTask="false"
+    fi
+    index=$(expr $index + 1)
+  done < "$TASKS"
+  index=1
+  for t in "${tasks[@]}" ; do
+    if [ "$index" == 1 ]; then
+      echo "$t" > "$TASKS"
+    else
+      echo "$t" >> "$TASKS"
+    fi
+    index=$(expr $index + 1)
+  done
+}
+
+
+
+
+
+#result=$(echo $1 | grep "mark")
+#enter=$'\n'
+#tasks=()
+#if [ "$result" != "" ]; then
+#  args=$*
+#  numsStr=${args:5:${#args}-5}
+#  numsArr=(${numsStr// / })
+#  index=1
+#  while read -r line; do
+#      for num in "${numsArr[@]}" ; do
+#        if [ "$index" == "$num" ]; then
+#          if [ "$1" == "mark" ]; then
+#              line=${line/"$UNMARK"/"$MARK"}
+#          else
+#              line=${line/"$MARK"/"$UNMARK"}
+#          fi
+#          break
+#        fi
+#      done
+#      tasks[index-1]=$line
+#      index=$(expr $index + 1)
+#  done < "$TASKS"
+#
+#  index=1
+#  for t in "${tasks[@]}" ; do
+#    if [ "$index" == 1 ]; then
+#      echo "$t" > "$TASKS"
+#    else
+#      echo "$t" >> "$TASKS"
+#    fi
+#    index=`expr $index + 1`
+#  done
+#fi
+
+# command and args
+
+
+
+
+
+cmd_args=$*
+# command and args length
+cmd_args_len=${#cmd_args}
+# command
+cmd=$1
+# command length
+cmd_len=${#cmd}
+
+unknown="false"
+if [ $# == 0 ]; then
+  echo "usage: todo <init|list|add|edit|remove|reset|mark|unmark> [args]"
+  exit
+fi
+
+if [ ! -f "$TASKS" ]; then
+  echo "Please run 'todo init' before running '$1' command."
+fi
+
+if [ "$cmd" == "init" ]; then
+  mkdir -p "$HOME/.todo"
+  touch "$TASKS"
+  echo "Initialized successfully."
+  unknown="true"
+fi
+
+if [ "$cmd" == "list" ]; then
+  List
+  unknown="true"
+fi
+
+if [ "$cmd" == "edit" ]; then
+  edit_num=${cmd_args:cmd_len+1:1}
+  edit_content=${cmd_args:cmd_len+3:cmd_args_len}
+  Edit "$edit_num" "$edit_content"
+  unknown="true"
+fi
+
+if [ "$cmd" == "add" ]; then
+  task=${cmd_args:4:cmd_args_len-4}" $UNMARK"
+  echo "$task" >> "$TASKS"
+  unknown="true"
+fi
+
+result=$(echo "$cmd" | grep "mark")
+if [ "$result" != "" ]; then
+  numsStr=${cmd_args:5:cmd_args_len-5}
+  Mark "$cmd" "$numsStr"
+  unknown="true"
+fi
+
+if [ "$cmd" == "remove" ]; then
+  remove_nums_str=${cmd_args:cmd_len+1:cmd_args_len}
+  remove_nums_arr=(${remove_nums_str// / })
+  Remove "${remove_nums_arr[*]}"
+  unknown="true"
+fi
+
+if [ "$cmd" == "reset" ]; then
+  echo "" > "$TASKS"
+  unknown="true"
+fi
+
+if [ "$unknown" == "false" ]; then
+  echo "Unknown command: '$cmd'!"
+fi
