@@ -40,8 +40,6 @@ public class Main {
 //            String str = mapper.writeValueAsString(entity) + "\n";
 //            System.out.println(str);
 //            BufferStringFlume.write(file,str);
-
-
 //            Entity Data Create
             String openid = f.format(i);// "_id"
             String brand = createBrand();
